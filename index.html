@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#1f6feb">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>背单词 · 新视野读写1</title>
+<style>
+  :root {
+    --bg: #0f1420;
+    --card: #1a2130;
+    --card2: #222b3d;
+    --text: #e8edf6;
+    --sub: #9aa7bd;
+    --accent: #4f8cff;
+    --green: #3fb96f;
+    --red: #e5534b;
+    --amber: #e0a13c;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; padding: 0 12px 40px;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    min-height: 100vh;
+  }
+  h1 { font-size: 20px; margin: 18px 4px 4px; }
+  .sub { color: var(--sub); font-size: 12.5px; margin: 0 4px 12px; line-height: 1.6; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .tab {
+    flex: 1 1 auto; min-width: 92px; padding: 10px 8px;
+    background: var(--card); color: var(--sub); border: 1px solid #2b3547;
+    border-radius: 10px; font-size: 14px; text-align: center; cursor: pointer;
+    user-select: none;
+  }
+  .tab.on { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+  .modes { display: flex; gap: 8px; margin-bottom: 12px; }
+  .mode {
+    flex: 1; padding: 11px 6px; border-radius: 10px; text-align: center;
+    background: var(--card); color: var(--sub); border: 1px solid #2b3547;
+    font-size: 14px; cursor: pointer; user-select: none;
+  }
+  .mode.on { background: var(--card2); color: var(--text); border-color: var(--accent); }
+  .card {
+    background: var(--card); border: 1px solid #2b3547; border-radius: 16px;
+    padding: 28px 20px; text-align: center; margin: 8px 0 14px;
+    min-height: 200px; display: flex; flex-direction: column; justify-content: center;
+    cursor: pointer; user-select: none;
+  }
+  .card .w { font-size: 30px; font-weight: 700; word-break: break-word; }
+  .card .phon { color: var(--sub); font-size: 15px; margin-top: 10px; letter-spacing: .3px; }
+  .card .m { font-size: 20px; line-height: 1.5; color: #cfe0ff; word-break: break-word; }
+  .card .hint { color: var(--sub); font-size: 13px; margin-top: 16px; }
+  .card .pos { color: var(--sub); font-size: 14px; margin-bottom: 8px; }
+  .row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .btn {
+    flex: 1; padding: 14px; border-radius: 12px; border: none;
+    font-size: 16px; font-weight: 600; cursor: pointer; user-select: none;
+  }
+  .btn.grey { background: #333d50; color: var(--text); }
+  .btn.green { background: var(--green); color: #06140c; }
+  .btn.red { background: var(--red); color: #fff; }
+  .btn.blue { background: var(--accent); color: #fff; }
+  .opts { display: flex; flex-direction: column; gap: 10px; margin: 8px 0 14px; }
+  .opt {
+    padding: 15px 16px; border-radius: 12px; background: var(--card);
+    border: 1px solid #2b3547; font-size: 16px; cursor: pointer; user-select: none;
+    text-align: left; line-height: 1.4;
+  }
+  .opt.right { background: #17351f; border-color: var(--green); color: #a9e8bd; }
+  .opt.wrong { background: #431d1b; border-color: var(--red); color: #ffb4ad; }
+  .opt:active { transform: scale(0.99); }
+  .stat { color: var(--sub); font-size: 13px; text-align: center; margin-bottom: 8px; }
+  .empty { color: var(--sub); text-align: center; padding: 40px 10px; font-size: 15px; line-height: 1.7; }
+  .note { margin-top: 24px; padding: 12px 14px; background: #1a2130; border: 1px dashed #39455b;
+          border-radius: 10px; color: var(--sub); font-size: 12px; line-height: 1.7; }
+  .wordchip { display:inline-block; padding: 3px 9px; margin: 3px; background: var(--card2);
+              border-radius: 20px; font-size: 13px; color: var(--text); }
+</style>
+</head>
+<body>
+  <h1>📚 背单词</h1>
+  <div class="sub">新视野大学英语（第四版）读写教程 1 · Unit 1 &amp; 2<br>词库由 OCR 转录，个别词可能有误，若发现请告诉小克修正。</div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="modes" id="modes"></div>
+
+  <div id="app"></div>
+
+  <div class="note">
+    💡 用法：<br>
+    · <b>学习</b>——点卡片翻面；「记得」进入下一词，「没记住」会自动收进错词本。<br>
+    · <b>测试</b>——看英文选中文，答错的也进错词本。<br>
+    · <b>错词本</b>——只背你错过/没记住的词，反复过。<br>
+    · 进度自动存在本机浏览器里，下次打开还在。
+  </div>
+
+<script>
+const WORDS = {
+  "U1 · Section A": [
+    {w:"triumph", p:"/ˈtraɪəmf/", m:"胜利，成功，成就"},
+    {w:"pledge", p:"/pledʒ/", m:"发誓，保证，许诺；誓言，誓约"},
+    {w:"pose", p:"/pəʊz/", m:"摆姿势；造成，导致（困难或危险）"},
+    {w:"routine", p:"/ruːˈtiːn/", m:"例行公事，常规，惯例；常规的，例行的"},
+    {w:"attain", p:"/əˈteɪn/", m:"（通过长时间努力）得到，获得"},
+    {w:"foundation", p:"/faʊnˈdeɪʃn/", m:"基础；（官能、天赋等）基本能力"},
+    {w:"comprehensive", p:"/ˌkɒmprɪˈhensɪv/", m:"全面的，综合的"},
+    {w:"facility", p:"/fəˈsɪləti/", m:"（复）设施，设备"},
+    {w:"community", p:"/kəˈmjuːnəti/", m:"社区；群体，团体"},
+    {w:"explore", p:"/ɪkˈsplɔː(r)/", m:"探讨，研究；勘探，探测"},
+    {w:"fascinating", p:"/ˈfæsɪneɪtɪŋ/", m:"极有吸引力的，迷人的"},
+    {w:"resource", p:"/rɪˈsɔːs/", m:"资源；自然资源"},
+    {w:"faculty", p:"/ˈfækəlti/", m:"（大学的）全体教员"},
+    {w:"pursue", p:"/pəˈsjuː/", m:"追求，致力于；追赶，追逐"},
+    {w:"passion", p:"/ˈpæʃn/", m:"强烈的爱好，热爱；激情"},
+    {w:"extraordinary", p:"/ɪkˈstrɔːdnri/", m:"特别的，极不寻常的，极好的"},
+    {w:"unique", p:"/juˈniːk/", m:"唯一的，独特的，独一无二的"},
+    {w:"enthusiasm", p:"/ɪnˈθjuːziæzəm/", m:"热爱，热情，热心"},
+    {w:"reap", p:"/riːp/", m:"收获，获得；收割（庄稼）"},
+    {w:"benefit", p:"/ˈbenɪfɪt/", m:"好处，益处；得益，受益"},
+    {w:"opportunity", p:"/ˌɒpəˈtjuːnəti/", m:"机会，时机"},
+    {w:"overwhelm", p:"/ˌəʊvəˈwelm/", m:"（数量大得）使无法对付"},
+    {w:"available", p:"/əˈveɪləbl/", m:"可获得的，可利用的，现成的"},
+    {w:"assume", p:"/əˈsjuːm/", m:"假定，假设，认为"},
+    {w:"emerge", p:"/ɪˈmɜːdʒ/", m:"出现，为…所公认；露出"},
+    {w:"sculpture", p:"/ˈskʌlptʃə(r)/", m:"雕刻艺术，雕塑"},
+    {w:"draft", p:"/drɑːft/", m:"草稿，草案；起草，草拟"},
+    {w:"draftsman", p:"/ˈdrɑːftsmən/", m:"制图员；拟稿人"},
+    {w:"architect", p:"/ˈɑːkɪtekt/", m:"建筑师；设计师，缔造者"},
+    {w:"giant", p:"/ˈdʒaɪənt/", m:"巨大的，特大的"},
+    {w:"owl", p:"/aʊl/", m:"猫头鹰"},
+    {w:"outweigh", p:"/ˌaʊtˈweɪ/", m:"比…更重要，比…更有价值"},
+    {w:"virtually", p:"/ˈvɜːtʃuəli/", m:"实际上，几乎；虚拟地"},
+    {w:"enrich", p:"/ɪnˈrɪtʃ/", m:"使丰富，使充实，强化"},
+    {w:"glow", p:"/gləʊ/", m:"柔和稳定的光；发出柔和稳定的光"},
+    {w:"yield", p:"/jiːld/", m:"得出（结果等）；出产；屈从，让步"},
+    {w:"abundant", p:"/əˈbʌndənt/", m:"大量的，丰富的，充裕的"},
+    {w:"responsibility", p:"/rɪˌspɒnsəˈbɪləti/", m:"责任，义务；职责，任务"},
+    {w:"inherit", p:"/ɪnˈherɪt/", m:"沿袭，秉承（信仰、传统）；继承"},
+    {w:"inheritor", p:"/ɪnˈherɪtə(r)/", m:"后继者，继承人；遗产继承人"},
+    {w:"transmit", p:"/trænzˈmɪt/", m:"传送，传递，传播"},
+    {w:"acquire", p:"/əˈkwaɪə(r)/", m:"学到，获得（知识、技能）"},
+    {w:"prosperous", p:"/ˈprɒspərəs/", m:"富裕的，繁荣的，兴旺的"},
+    {w:"get by", m:"过活，过得去，勉强应付"},
+    {w:"make the most of", m:"最大限度地利用"},
+    {w:"reap the benefits", m:"收获益处"},
+    {w:"in advance", m:"预先，提前"},
+    {w:"stand a chance of", m:"有可能成功"},
+    {w:"over time", m:"逐渐地，慢慢地"},
+    {w:"all at once", m:"一下子，突然"},
+    {w:"take pleasure in", m:"以（做）…为乐"},
+    {w:"open the door to", m:"给…以机会，为…敞开大门"},
+    {w:"remind sb. of", m:"使…想起"}
+  ],
+  "U1 · Section B": [
+    {w:"participate", p:"/pɑːˈtɪsɪpeɪt/", m:"参加，参与"},
+    {w:"incredible", p:"/ɪnˈkredəbl/", m:"极好的，极大的；难以置信的"},
+    {w:"deny", p:"/dɪˈnaɪ/", m:"否认，否定"},
+    {w:"undeniably", p:"/ˌʌndɪˈnaɪəbli/", m:"不可否认地，无可争辩地"},
+    {w:"depart", p:"/dɪˈpɑːt/", m:"离开，启程，动身"},
+    {w:"inquisitive", p:"/ɪnˈkwɪzətɪv/", m:"好学的，好问的；过分好奇的"},
+    {w:"engage", p:"/ɪnˈgeɪdʒ/", m:"吸引住（兴趣、注意力）；参加，参与"},
+    {w:"despair", p:"/dɪˈspeə(r)/", m:"绝望，感到无望"},
+    {w:"embrace", p:"/ɪmˈbreɪs/", m:"欣然接受，采纳；抱，拥抱"},
+    {w:"stimulate", p:"/ˈstɪmjuleɪt/", m:"激发，鼓励，激励；刺激，促使"},
+    {w:"intellectual", p:"/ˌɪntəˈlektʃuəl/", m:"智力的，脑力的"},
+    {w:"capacity", p:"/kəˈpæsəti/", m:"能力，才能；容量，容积"},
+    {w:"bind", p:"/baɪnd/", m:"使受（规则或协议）约束；捆，绑"},
+    {w:"connect", p:"/kəˈnekt/", m:"联结，连接；联系，关联"},
+    {w:"assured", p:"/əˈʃʊəd/", m:"有把握的，自信的，肯定的"},
+    {w:"career", p:"/kəˈrɪə(r)/", m:"事业，职业"},
+    {w:"decent", p:"/ˈdiːsnt/", m:"可接受的，相当好的；正派的"},
+    {w:"boast", p:"/bəʊst/", m:"夸耀，吹嘘"},
+    {w:"bond", p:"/bɒnd/", m:"纽带，联系；培养特殊的关系"},
+    {w:"blossom", p:"/ˈblɒsəm/", m:"发展，成长，繁盛，兴旺"},
+    {w:"decade", p:"/ˈdekeɪd/", m:"十年"},
+    {w:"genuine", p:"/ˈdʒenjuɪn/", m:"真诚的，诚挚的；真正的"},
+    {w:"instinct", p:"/ˈɪnstɪŋkt/", m:"本能，直觉，天性"},
+    {w:"secure", p:"/sɪˈkjʊə(r)/", m:"自信的，安心的；安全的"},
+    {w:"proactive", p:"/ˌprəʊˈæktɪv/", m:"积极的，先发制人的"},
+    {w:"stereotype", p:"/ˈsteriətaɪp/", m:"模式化的思想，旧框框"},
+    {w:"comprehend", p:"/ˌkɒmprɪˈhend/", m:"理解，领悟"},
+    {w:"cultivate", p:"/ˈkʌltɪveɪt/", m:"培养，养成；耕，耕作"},
+    {w:"range", p:"/reɪndʒ/", m:"一系列"},
+    {w:"innocence", p:"/ˈɪnəsns/", m:"天真，单纯；清白"},
+    {w:"curiosity", p:"/ˌkjʊəriˈɒsəti/", m:"好奇心"},
+    {w:"flexibility", p:"/ˌfleksəˈbɪləti/", m:"灵活性"},
+    {w:"approach", p:"/əˈprəʊtʃ/", m:"处理，对付；接近；方式，方法"},
+    {w:"enthusiastically", p:"/ɪnˌθjuːziˈæstɪkli/", m:"热心地，热忱地"},
+    {w:"talent", p:"/ˈtælənt/", m:"天资，天赋，才能"},
+    {w:"evolve", p:"/ɪˈvɒlv/", m:"逐步发展，逐渐演变；进化"},
+    {w:"potential", p:"/pəˈtenʃl/", m:"潜力，潜能；可能的，潜在的"},
+    {w:"bold", p:"/bəʊld/", m:"果敢的，敢于冒险的，大胆的"},
+    {w:"enormously", p:"/ɪˈnɔːməsli/", m:"非常，极其"},
+    {w:"be about to do", m:"正要（做），即将（做）"},
+    {w:"set off", m:"离开，出发"},
+    {w:"open up", m:"（机会、新情况）出现，产生"},
+    {w:"turn into", m:"（使）变成"},
+    {w:"above all", m:"最重要的是"},
+    {w:"take sth. seriously", m:"认真对待"},
+    {w:"sign up for", m:"报名"},
+    {w:"give sb. the benefit of the doubt", m:"姑且相信某人"},
+    {w:"reduce sb. to", m:"使陷入（不利境地）"},
+    {w:"as long as", m:"只要"},
+    {w:"give back", m:"回报"},
+    {w:"safe and sound", m:"安然无恙"},
+    {w:"take away", m:"拿走，带走，使消失"},
+    {w:"be cut out for", m:"天生适合做…"},
+    {w:"make it", m:"获得成功；准时到达"},
+    {w:"can't wait", m:"等不及，急着"}
+  ],
+  "U2 · Section A": [
+    {w:"clutter", p:"/ˈklʌtə(r)/", m:"杂乱的东西"},
+    {w:"await", p:"/əˈweɪt/", m:"等待，等候；将降临到…身上"},
+    {w:"efficiency", p:"/ɪˈfɪʃnsi/", m:"效率，效能"},
+    {w:"embarrassment", p:"/ɪmˈbærəsmənt/", m:"难堪，尴尬；让人难堪的人"},
+    {w:"tube", p:"/tjuːb/", m:"管状容器，管子"},
+    {w:"paste", p:"/peɪst/", m:"糊状物；（用糨糊）粘贴"},
+    {w:"toothpaste", p:"/ˈtuːθpeɪst/", m:"牙膏"},
+    {w:"polish", p:"/ˈpɒlɪʃ/", m:"上光剂；擦亮；修改，润色"},
+    {w:"dump", p:"/dʌmp/", m:"把…倒空；丢弃，扔掉"},
+    {w:"mismatched", p:"/ˌmɪsˈmætʃt/", m:"不配对的"},
+    {w:"pants", p:"/pænts/", m:"长裤，裤子；短内裤"},
+    {w:"closet", p:"/ˈklɒzɪt/", m:"壁橱"},
+    {w:"comic", p:"/ˈkɒmɪk/", m:"连环漫画（册）；滑稽的，好笑的"},
+    {w:"fiction", p:"/ˈfɪkʃn/", m:"小说；虚构的事"},
+    {w:"historical", p:"/hɪˈstɒrɪkl/", m:"描写历史事件的；历史的"},
+    {w:"stuff", p:"/stʌf/", m:"填，塞；填满；物品，所有物"},
+    {w:"sack", p:"/sæk/", m:"大口袋，麻袋"},
+    {w:"stack", p:"/stæk/", m:"（使）整齐地堆起；一叠"},
+    {w:"plague", p:"/pleɪg/", m:"蝗灾/鼠灾；瘟疫，疫病"},
+    {w:"clumsy", p:"/ˈklʌmzi/", m:"笨重的；笨拙的，不灵活的"},
+    {w:"charity", p:"/ˈtʃærəti/", m:"慈善事业；慈善机构"},
+    {w:"band", p:"/bænd/", m:"圈，箍，带；乐队"},
+    {w:"curl", p:"/kɜːl/", m:"卷，（使）弯曲；卷发夹"},
+    {w:"strain", p:"/streɪn/", m:"使劲拉（推），绷紧；拉伤，扭伤"},
+    {w:"haul", p:"/hɔːl/", m:"拖，拉"},
+    {w:"donation", p:"/dəʊˈneɪʃn/", m:"捐赠物；捐助"},
+    {w:"curb", p:"/kɜːb/", m:"路缘；控制，抑制"},
+    {w:"sore", p:"/sɔː(r)/", m:"痛的，疼痛的"},
+    {w:"ridiculous", p:"/rɪˈdɪkjələs/", m:"愚蠢的，荒唐的，可笑的"},
+    {w:"toss", p:"/tɒs/", m:"扔，掷，抛"},
+    {w:"strip", p:"/strɪp/", m:"剥去，除去（表面的东西）"},
+    {w:"craft", p:"/krɑːft/", m:"手艺，工艺"},
+    {w:"clip", p:"/klɪp/", m:"剪下；夹住，扣住"},
+    {w:"emotional", p:"/ɪˈməʊʃənl/", m:"情绪激动的；情绪（上）的，情感的"},
+    {w:"reverse", p:"/rɪˈvɜːs/", m:"推翻，彻底改变；相反；颠倒的"},
+    {w:"straighten up", m:"把…弄整洁；直起身"},
+    {w:"keep back", m:"抑制，控制（情感）；隐瞒"},
+    {w:"symbol", p:"/ˈsɪmbl/", m:"象征，标志"},
+    {w:"free of", m:"无…的，摆脱了…的"},
+    {w:"catch oneself doing", m:"突然意识到自己在做…"},
+    {w:"throw away", m:"扔掉，丢弃"},
+    {w:"deal with", m:"处理，应付"},
+    {w:"at a time", m:"每次"},
+    {w:"after all", m:"终究，最终；毕竟"},
+    {w:"with open arms", m:"热烈地，欣然"}
+  ],
+  "U2 · Section B": [
+    {w:"limp", p:"/lɪmp/", m:"软的，不强壮的；跛行"},
+    {w:"surge", p:"/sɜːdʒ/", m:"迅速涌动，蜂拥向前；激增"},
+    {w:"breeze", p:"/briːz/", m:"微风，和风"},
+    {w:"shiver", p:"/ˈʃɪvə(r)/", m:"颤抖，哆嗦，发抖"},
+    {w:"complain", p:"/kəmˈpleɪn/", m:"抱怨，不满，发牢骚"},
+    {w:"chilly", p:"/ˈtʃɪli/", m:"寒冷的，冷得难受的"},
+    {w:"stride", p:"/straɪd/", m:"迈大步走；大步，阔步"},
+    {w:"melted", p:"/ˈmeltɪd/", m:"融化的，熔化的"},
+    {w:"immense", p:"/ɪˈmens/", m:"巨大的"},
+    {w:"fatigue", p:"/fəˈtiːg/", m:"疲劳，疲乏，劳累"},
+    {w:"aboard", p:"/əˈbɔːd/", m:"在（船、飞机、火车）上"},
+    {w:"hut", p:"/hʌt/", m:"（简陋的）小屋，棚屋"},
+    {w:"barrel", p:"/ˈbærəl/", m:"（中间鼓起的）桶"},
+    {w:"shell", p:"/ʃel/", m:"壳，甲壳"},
+    {w:"shellfish", p:"/ˈʃelfɪʃ/", m:"水生有壳动物"},
+    {w:"bundle", p:"/ˈbʌndl/", m:"捆，把，扎，束"},
+    {w:"portion", p:"/ˈpɔːʃn/", m:"一部分，一份"},
+    {w:"migration", p:"/maɪˈgreɪʃn/", m:"迁徙；移居"},
+    {w:"Dalmatian", p:"/dælˈmeɪʃn/", m:"达尔马提亚的"},
+    {w:"shed", p:"/ʃed/", m:"棚，厂房，库房"},
+    {w:"wrap", p:"/ræp/", m:"包，裹"},
+    {w:"unwrap", p:"/ʌnˈræp/", m:"拆开，打开（包装）"},
+    {w:"suspicious", p:"/səˈspɪʃəs/", m:"感到怀疑的；猜疑的"},
+    {w:"suspiciously", p:"/səˈspɪʃəsli/", m:"怀疑地，不信任地"},
+    {w:"pinch", p:"/pɪntʃ/", m:"一小撮；捏，掐，夹"},
+    {w:"vanish", p:"/ˈvænɪʃ/", m:"突然不见，消失"},
+    {w:"slope", p:"/sləʊp/", m:"斜面，斜坡"},
+    {w:"peak", p:"/piːk/", m:"山顶，山峰；高峰，顶点"},
+    {w:"stretch", p:"/stretʃ/", m:"延续，延伸；变大，变松；伸展"},
+    {w:"overtake", p:"/ˌəʊvəˈteɪk/", m:"追上，超过；超越"},
+    {w:"anticipate", p:"/ænˈtɪsɪpeɪt/", m:"预期，预料"},
+    {w:"reluctance", p:"/rɪˈlʌktəns/", m:"勉强，不情愿"},
+    {w:"stoop", p:"/stuːp/", m:"俯身，弯腰"},
+    {w:"restraint", p:"/rɪˈstreɪnt/", m:"安全装置；抑制，克制；限制"},
+    {w:"scrape", p:"/skreɪp/", m:"摩擦，擦伤；刮除"},
+    {w:"delicate", p:"/ˈdelɪkət/", m:"易坏的，脆弱的；微妙的；精巧的"},
+    {w:"grip", p:"/grɪp/", m:"紧握，紧抓；握力"},
+    {w:"sway", p:"/sweɪ/", m:"摇摆，摆动，摇晃"},
+    {w:"accompany", p:"/əˈkʌmpəni/", m:"陪伴，陪同"},
+    {w:"tuna", p:"/ˈtjuːnə/", m:"金枪鱼"},
+    {w:"awkward", p:"/ˈɔːkwəd/", m:"笨拙的，不灵巧的；令人尴尬的"},
+    {w:"occasionally", p:"/əˈkeɪʒənəli/", m:"偶尔，有时"},
+    {w:"dislike", p:"/dɪsˈlaɪk/", m:"不喜欢"},
+    {w:"sip", p:"/sɪp/", m:"一小口；小口地喝，抿"},
+    {w:"slow down", m:"（使）慢下来，减速"},
+    {w:"make sense", m:"有意义，易于理解；是明智的"},
+    {w:"at least", m:"至少，起码"},
+    {w:"lay out", m:"铺开，展开"},
+    {w:"hang up", m:"挂起（衣服）"}
+  ]
+};
+
+const KEYS = Object.keys(WORDS);
+let curTab = KEYS[0];
+let curMode = 'study';  // study | quiz | review
+let idx = 0;
+let flipped = false;
+let quizWord = null, quizOpts = [], quizAnswered = false;
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try { const v = localStorage.getItem('vc_'+k); return v==null?d:JSON.parse(v); } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem('vc_'+k, JSON.stringify(v)); } catch(e){} }
+};
+const wrong = () => store.get('wrong', []);           // array of "unit§word"
+const setWrong = a => store.set('wrong', a);
+const addWrong = key => { const a = wrong(); if(!a.includes(key)) a.push(key); setWrong(a); };
+const delWrong = key => setWrong(wrong().filter(x=>x!==key));
+
+function renderTabs(){
+  $('tabs').innerHTML = KEYS.map(k =>
+    `<div class="tab ${k===curTab?'on':''}" data-k="${k}">${k}</div>`).join('');
+  $('tabs').querySelectorAll('.tab').forEach(el=>el.onclick=()=>{ curTab=el.dataset.k; idx=0; flipped=false; quizWord=null; renderTabs(); render(); });
+}
+function renderModes(){
+  const modes = [['study','学习'],['quiz','测试'],['review','错词本']];
+  $('modes').innerHTML = modes.map(([k,n]) =>
+    `<div class="mode ${k===curMode?'on':''}" data-m="${k}">${n}</div>`).join('');
+  $('modes').querySelectorAll('.mode').forEach(el=>el.onclick=()=>{ curMode=el.dataset.m; idx=0; flipped=false; quizAnswered=false; quizWord=null; renderModes(); render(); });
+}
+
+function list(){ return WORDS[curTab]; }
+function reviewList(){ return wrong().map(k=>{ const [u,w]=k.split('§'); const arr=WORDS[u]; const it=arr?arr.find(x=>x.w===w):null; return it?{key:k,word:it}:null; }).filter(Boolean); }
+
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function render(){
+  const app = $('app');
+  if(curMode==='study') renderStudy(app);
+  else if(curMode==='quiz') renderQuiz(app);
+  else renderReview(app);
+}
+
+function renderStudy(app){
+  const L = list();
+  if(!L.length){ app.innerHTML='<div class="empty">这里还没有词。</div>'; return; }
+  if(idx>=L.length){ idx=0; }
+  const w = L[idx];
+  const inWrong = wrong().includes(curTab+'§'+w.w);
+  app.innerHTML = `
+    <div class="stat">${idx+1} / ${L.length} · ${curTab}</div>
+    <div class="card" id="card">
+      ${flipped ? `<div class="m">${w.m}</div>` : `<div class="w">${w.w}</div>${w.p?`<div class="phon">${w.p}</div>`:''}`}
+      <div class="hint">${flipped ? '点我翻回去' : '点我翻面看释义'}</div>
+    </div>
+    ${flipped ? `
+      <div class="row">
+        <button class="btn red" id="bNo">没记住</button>
+        <button class="btn green" id="bYes">记得</button>
+      </div>` : ''}
+  `;
+  $('card').onclick = () => { flipped=!flipped; render(); };
+  if(flipped){
+    $('bYes').onclick = ()=>{ if(inWrong) delWrong(curTab+'§'+w.w); idx++; flipped=false; render(); };
+    $('bNo').onclick = ()=>{ addWrong(curTab+'§'+w.w); idx++; flipped=false; render(); };
+  }
+}
+
+function renderQuiz(app){
+  const L = list();
+  if(!L.length){ app.innerHTML='<div class="empty">这里还没有词。</div>'; return; }
+  if(!quizWord){
+    quizWord = L[Math.floor(Math.random()*L.length)];
+    const others = shuffle(L.filter(x=>x!==quizWord)).slice(0,3);
+    quizOpts = shuffle([quizWord, ...others]);
+    quizAnswered = false;
+  }
+  app.innerHTML = `
+    <div class="stat">${curTab} · 测试</div>
+    <div class="card" style="min-height:120px;"><div class="w" style="font-size:26px;">${quizWord.w}</div>${quizWord.p?`<div class="phon">${quizWord.p}</div>`:''}</div>
+    <div class="opts">${quizOpts.map((o,i)=>`<div class="opt" data-i="${i}">${o.m}</div>`).join('')}</div>
+  `;
+  app.querySelectorAll('.opt').forEach(el=>el.onclick=()=>{
+    if(quizAnswered) return;
+    quizAnswered = true;
+    const i = +el.dataset.i;
+    const right = quizOpts[i].w === quizWord.w;
+    if(right){ el.classList.add('right'); }
+    else { el.classList.add('wrong'); addWrong(curTab+'§'+quizWord.w);
+      app.querySelectorAll('.opt').forEach(o=>{ if(quizOpts[+o.dataset.i].w===quizWord.w) o.classList.add('right'); });
+    }
+    setTimeout(()=>{ quizWord=null; render(); }, 900);
+  });
+}
+
+function renderReview(app){
+  const L = reviewList();
+  app.innerHTML = `<div class="stat">错词本 · 共 ${L.length} 个</div>`;
+  if(!L.length){ app.innerHTML += '<div class="empty">错词本是空的 🎉<br>去「学习」或「测试」里没记住的词会自动收进来。</div>'; return; }
+  if(idx>=L.length) idx=0;
+  const item = L[idx];
+  const w = item.word;
+  app.innerHTML += `
+    <div class="card" id="card">
+      ${flipped ? `<div class="m">${w.m}</div>` : `<div class="w">${w.w}</div>${w.p?`<div class="phon">${w.p}</div>`:''}`}
+      <div class="hint">${flipped ? '点我翻回去' : '点我翻面'}</div>
+    </div>
+    ${flipped ? `
+      <div class="row">
+        <button class="btn red" id="rNo">还不会</button>
+        <button class="btn green" id="rYes">会了</button>
+      </div>` : ''}
+  `;
+  $('card').onclick = ()=>{ flipped=!flipped; render(); };
+  if(flipped){
+    $('rYes').onclick = ()=>{ delWrong(item.key); idx++; flipped=false; render(); };
+    $('rNo').onclick = ()=>{ idx++; flipped=false; render(); };
+  }
+}
+
+renderTabs();
+renderModes();
+render();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>
