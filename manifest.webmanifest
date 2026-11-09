@@ -1,0 +1,14 @@
+{
+  "name": "背单词 · 新视野读写1",
+  "short_name": "背单词",
+  "description": "新视野大学英语（第四版）读写教程1 · Unit 1 & 2 单词",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1420",
+  "theme_color": "#1f6feb",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
