@@ -9,92 +9,66 @@
 <title>背单词 · 新视野读写1</title>
 <style>
   :root {
-    --bg: #0f1420;
-    --card: #1a2130;
-    --card2: #222b3d;
-    --text: #e8edf6;
-    --sub: #9aa7bd;
-    --accent: #4f8cff;
-    --green: #3fb96f;
-    --red: #e5534b;
-    --amber: #e0a13c;
+    --bg: #0f1420; --card: #1a2130; --card2: #222b3d; --text: #e8edf6; --sub: #9aa7bd;
+    --accent: #4f8cff; --green: #3fb96f; --red: #e5534b; --amber: #e0a13c;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body {
-    margin: 0; padding: 0 12px 40px;
-    background: var(--bg); color: var(--text);
-    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-    min-height: 100vh;
-  }
+  body { margin: 0; padding: 0 12px 40px; background: var(--bg); color: var(--text);
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; min-height: 100vh; }
   h1 { font-size: 20px; margin: 18px 4px 4px; }
   .sub { color: var(--sub); font-size: 12.5px; margin: 0 4px 12px; line-height: 1.6; }
-  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .tab {
-    flex: 1 1 auto; min-width: 92px; padding: 10px 8px;
-    background: var(--card); color: var(--sub); border: 1px solid #2b3547;
-    border-radius: 10px; font-size: 14px; text-align: center; cursor: pointer;
-    user-select: none;
-  }
-  .tab.on { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
-  .modes { display: flex; gap: 8px; margin-bottom: 12px; }
-  .mode {
-    flex: 1; padding: 11px 6px; border-radius: 10px; text-align: center;
-    background: var(--card); color: var(--sub); border: 1px solid #2b3547;
-    font-size: 14px; cursor: pointer; user-select: none;
-  }
+  .modes { display: flex; gap: 8px; margin-bottom: 10px; }
+  .mode { flex: 1; padding: 11px 4px; border-radius: 10px; text-align: center;
+    background: var(--card); color: var(--sub); border: 1px solid #2b3547; font-size: 14px; cursor: pointer; user-select: none; }
   .mode.on { background: var(--card2); color: var(--text); border-color: var(--accent); }
-  .card {
-    background: var(--card); border: 1px solid #2b3547; border-radius: 16px;
-    padding: 28px 20px; text-align: center; margin: 8px 0 14px;
-    min-height: 200px; display: flex; flex-direction: column; justify-content: center;
-    cursor: pointer; user-select: none;
-  }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .tab { flex: 1 1 auto; min-width: 92px; padding: 10px 8px; background: var(--card); color: var(--sub);
+    border: 1px solid #2b3547; border-radius: 10px; font-size: 14px; text-align: center; cursor: pointer; user-select: none; }
+  .tab.on { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+  .card { background: var(--card); border: 1px solid #2b3547; border-radius: 16px; padding: 28px 20px;
+    text-align: center; margin: 8px 0 14px; min-height: 200px; display: flex; flex-direction: column;
+    justify-content: center; cursor: pointer; user-select: none; }
   .card .w { font-size: 30px; font-weight: 700; word-break: break-word; }
   .card .phon { color: var(--sub); font-size: 15px; margin-top: 10px; letter-spacing: .3px; }
   .card .m { font-size: 20px; line-height: 1.5; color: #cfe0ff; word-break: break-word; }
   .card .hint { color: var(--sub); font-size: 13px; margin-top: 16px; }
-  .card .pos { color: var(--sub); font-size: 14px; margin-bottom: 8px; }
   .row { display: flex; gap: 10px; margin-bottom: 14px; }
-  .btn {
-    flex: 1; padding: 14px; border-radius: 12px; border: none;
-    font-size: 16px; font-weight: 600; cursor: pointer; user-select: none;
-  }
+  .btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; user-select: none; }
   .btn.grey { background: #333d50; color: var(--text); }
   .btn.green { background: var(--green); color: #06140c; }
   .btn.red { background: var(--red); color: #fff; }
   .btn.blue { background: var(--accent); color: #fff; }
   .opts { display: flex; flex-direction: column; gap: 10px; margin: 8px 0 14px; }
-  .opt {
-    padding: 15px 16px; border-radius: 12px; background: var(--card);
-    border: 1px solid #2b3547; font-size: 16px; cursor: pointer; user-select: none;
-    text-align: left; line-height: 1.4;
-  }
+  .opt { padding: 15px 16px; border-radius: 12px; background: var(--card); border: 1px solid #2b3547;
+    font-size: 16px; cursor: pointer; user-select: none; text-align: left; line-height: 1.4; }
   .opt.right { background: #17351f; border-color: var(--green); color: #a9e8bd; }
   .opt.wrong { background: #431d1b; border-color: var(--red); color: #ffb4ad; }
   .opt:active { transform: scale(0.99); }
   .stat { color: var(--sub); font-size: 13px; text-align: center; margin-bottom: 8px; }
   .empty { color: var(--sub); text-align: center; padding: 40px 10px; font-size: 15px; line-height: 1.7; }
+  .settings { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 4px 0 10px; font-size: 14px; color: var(--sub); }
+  .settings b { color: var(--text); font-size: 16px; min-width: 24px; text-align: center; }
+  .settings button { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #2b3547; background: var(--card); color: var(--text); font-size: 18px; cursor: pointer; }
+  .reset { color: var(--red); margin-left: 12px; cursor: pointer; font-size: 13px; text-decoration: underline; }
   .note { margin-top: 24px; padding: 12px 14px; background: #1a2130; border: 1px dashed #39455b;
-          border-radius: 10px; color: var(--sub); font-size: 12px; line-height: 1.7; }
-  .wordchip { display:inline-block; padding: 3px 9px; margin: 3px; background: var(--card2);
-              border-radius: 20px; font-size: 13px; color: var(--text); }
+    border-radius: 10px; color: var(--sub); font-size: 12px; line-height: 1.7; }
 </style>
 </head>
 <body>
   <h1>📚 背单词</h1>
-  <div class="sub">新视野大学英语（第四版）读写教程 1 · Unit 1 &amp; 2<br>词库由 OCR 转录，个别词可能有误，若发现请告诉小克修正。</div>
+  <div class="sub">新视野大学英语（第四版）读写教程 1 · Unit 1 &amp; 2<br>每日按艾宾浩斯遗忘曲线自动安排复习，进度存本机。</div>
 
-  <div class="tabs" id="tabs"></div>
   <div class="modes" id="modes"></div>
-
+  <div class="tabs" id="tabs"></div>
   <div id="app"></div>
 
   <div class="note">
     💡 用法：<br>
-    · <b>学习</b>——点卡片翻面；「记得」进入下一词，「没记住」会自动收进错词本。<br>
-    · <b>测试</b>——看英文选中文，答错的也进错词本。<br>
-    · <b>错词本</b>——只背你错过/没记住的词，反复过。<br>
-    · 进度自动存在本机浏览器里，下次打开还在。
+    · <b>今日任务</b>——每天先点这个。它按遗忘曲线安排「新词 + 到点要复习的词」，你只需翻面后点「认识 / 模糊 / 忘记」。<br>
+    · <b>浏览</b>——自由翻看某个单元的所有词。<br>
+    · <b>测试</b>——看英文选中文，答错的进错词本。<br>
+    · <b>错词本</b>——专背你「忘记」过的词。<br>
+    · 词库由 OCR 转录，个别词可能有误，发现就告诉小克改。
   </div>
 
 <script>
@@ -311,80 +285,156 @@ const WORDS = {
   ]
 };
 
-const KEYS = Object.keys(WORDS);
-let curTab = KEYS[0];
-let curMode = 'study';  // study | quiz | review
-let idx = 0;
-let flipped = false;
-let quizWord = null, quizOpts = [], quizAnswered = false;
+const UNITS = Object.keys(WORDS);
+const ALL = [];
+UNITS.forEach(u => WORDS[u].forEach(w => ALL.push(Object.assign({unit:u, key:u+'§'+w.w}, w))));
 
-const $ = id => document.getElementById(id);
 const store = {
   get(k, d){ try { const v = localStorage.getItem('vc_'+k); return v==null?d:JSON.parse(v); } catch(e){ return d; } },
   set(k, v){ try { localStorage.setItem('vc_'+k, JSON.stringify(v)); } catch(e){} }
 };
-const wrong = () => store.get('wrong', []);           // array of "unit§word"
+const SRS = () => store.get('srs', {});
+const setSRS = s => store.set('srs', s);
+const getQuota = () => store.get('quota', 15);
+const setQuota = n => store.set('quota', Math.max(1, Math.min(100, n|0)));
+const wrong = () => store.get('wrong', []);
 const setWrong = a => store.set('wrong', a);
-const addWrong = key => { const a = wrong(); if(!a.includes(key)) a.push(key); setWrong(a); };
-const delWrong = key => setWrong(wrong().filter(x=>x!==key));
 
+function pad(n){ return String(n).padStart(2,'0'); }
+function today(){ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function addDays(str, n){ const [y,m,dd]=str.split('-').map(Number); const dt=new Date(y,m-1,dd); dt.setDate(dt.getDate()+n); return dt.getFullYear()+'-'+pad(dt.getMonth()+1)+'-'+pad(dt.getDate()); }
+const INTERVAL = [1,2,4,7,15,30];
+
+function dailyNewCount(){
+  const d = store.get('daily', {date:'', n:0});
+  return d.date===today() ? d.n : 0;
+}
+function bumpDaily(){
+  const d = store.get('daily', {date:'', n:0});
+  const t = today();
+  store.set('daily', d.date===t ? {date:t, n:d.n+1} : {date:t, n:1});
+}
+function todayQueue(){
+  const s=SRS(), t=today();
+  const due=[], fresh=[];
+  for(const it of ALL){
+    const e=s[it.key];
+    if(!e) fresh.push(it);
+    else if(e.due<=t && e.st<99) due.push(it);
+  }
+  const remaining = Math.max(0, getQuota() - dailyNewCount());
+  return { due, fresh: fresh.slice(0, remaining) };
+}
+
+const $ = id => document.getElementById(id);
+const MODES = [['today','今日任务'],['browse','浏览'],['quiz','测试'],['review','错词本']];
+let curMode = 'today', curTab = UNITS[0];
+let idx=0, flipped=false, todayList=[], tPos=0, quizWord=null, quizOpts=[], quizAnswered=false;
+
+function renderModes(){
+  $('modes').innerHTML = MODES.map(([k,n])=>`<div class="mode ${k===curMode?'on':''}" data-m="${k}">${n}</div>`).join('');
+  $('modes').querySelectorAll('.mode').forEach(el=>el.onclick=()=>{
+    curMode=el.dataset.m; idx=0; flipped=false; quizWord=null; quizAnswered=false;
+    if(curMode==='today'){ todayList=[]; tPos=0; }
+    renderModes(); render();
+  });
+}
 function renderTabs(){
-  $('tabs').innerHTML = KEYS.map(k =>
-    `<div class="tab ${k===curTab?'on':''}" data-k="${k}">${k}</div>`).join('');
+  const show = (curMode==='browse' || curMode==='quiz');
+  if(!show){ $('tabs').innerHTML=''; return; }
+  $('tabs').innerHTML = UNITS.map(k=>`<div class="tab ${k===curTab?'on':''}" data-k="${k}">${k}</div>`).join('');
   $('tabs').querySelectorAll('.tab').forEach(el=>el.onclick=()=>{ curTab=el.dataset.k; idx=0; flipped=false; quizWord=null; renderTabs(); render(); });
 }
-function renderModes(){
-  const modes = [['study','学习'],['quiz','测试'],['review','错词本']];
-  $('modes').innerHTML = modes.map(([k,n]) =>
-    `<div class="mode ${k===curMode?'on':''}" data-m="${k}">${n}</div>`).join('');
-  $('modes').querySelectorAll('.mode').forEach(el=>el.onclick=()=>{ curMode=el.dataset.m; idx=0; flipped=false; quizAnswered=false; quizWord=null; renderModes(); render(); });
-}
-
-function list(){ return WORDS[curTab]; }
-function reviewList(){ return wrong().map(k=>{ const [u,w]=k.split('§'); const arr=WORDS[u]; const it=arr?arr.find(x=>x.w===w):null; return it?{key:k,word:it}:null; }).filter(Boolean); }
+function render(){ const app=$('app'); if(curMode==='today') renderToday(app); else if(curMode==='browse') renderBrowse(app); else if(curMode==='quiz') renderQuiz(app); else renderReview(app); }
 
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
-function render(){
-  const app = $('app');
-  if(curMode==='study') renderStudy(app);
-  else if(curMode==='quiz') renderQuiz(app);
-  else renderReview(app);
+function applyAnswer(it, grade){
+  const s=SRS(), t=today(); const e=s[it.key]; const isNew=!e;
+  if(grade==='know'){
+    const st=Math.min(e?e.st+1:1, 6);
+    s[it.key]={st, due:addDays(t, INTERVAL[st-1]), seen:t};
+    setWrong(wrong().filter(x=>x!==it.key));
+  } else if(grade==='fuzzy'){
+    s[it.key] = isNew ? {st:1, due:addDays(t,1), seen:t} : Object.assign({}, e, {due:addDays(t,1)});
+  } else {
+    s[it.key]={st:1, due:addDays(t,1), seen:t};
+    if(!wrong().includes(it.key)) setWrong(wrong().concat(it.key));
+  }
+  if(isNew) bumpDaily();
+  setSRS(s);
 }
 
-function renderStudy(app){
-  const L = list();
-  if(!L.length){ app.innerHTML='<div class="empty">这里还没有词。</div>'; return; }
-  if(idx>=L.length){ idx=0; }
-  const w = L[idx];
-  const inWrong = wrong().includes(curTab+'§'+w.w);
+function renderToday(app){
+  if(todayList.length===0){
+    const {due, fresh} = todayQueue();
+    todayList = due.concat(fresh); tPos=0;
+  }
+  let html = `<div class="settings">
+    <span>每天新词</span><button id="qMinus">−</button><b>${getQuota()}</b><button id="qPlus">+</button>
+    <span class="reset" id="resetBtn">重置进度</span>
+  </div>`;
+  if(todayList.length===0){
+    html += `<div class="empty">🎉 今天没有要背的了。<br>要么词都背完了，要么新词额度用完了——明天再来，或调大「每天新词」。</div>`;
+    app.innerHTML = html; wireSettings(); return;
+  }
+  if(tPos>=todayList.length){
+    html += `<div class="empty">✅ 今天的任务完成啦！<br>按遗忘曲线，到点的复习和新词都过了一遍。<br>明天再来，别断。</div>`;
+    app.innerHTML = html; todayList=[]; tPos=0; return;
+  }
+  const it = todayList[tPos];
+  html += `
+    <div class="stat">今日任务 ${tPos+1} / ${todayList.length}</div>
+    <div class="card" id="card">
+      ${flipped ? `<div class="m">${it.m}</div>` : `<div class="w">${it.w}</div>${it.p?`<div class="phon">${it.p}</div>`:''}`}
+      <div class="hint">${flipped ? '想起来了没？' : '点我翻面看释义'}</div>
+    </div>
+    ${flipped ? `<div class="row">
+      <button class="btn red" id="f">忘记</button>
+      <button class="btn grey" id="z">模糊</button>
+      <button class="btn green" id="k">认识</button>
+    </div>` : ''}
+  `;
+  app.innerHTML = html;
+  $('card').onclick = ()=>{ flipped=!flipped; render(); };
+  if(flipped){
+    $('f').onclick=()=>{ applyAnswer(it,'forgot'); next(); };
+    $('z').onclick=()=>{ applyAnswer(it,'fuzzy'); next(); };
+    $('k').onclick=()=>{ applyAnswer(it,'know'); next(); };
+  }
+  function next(){ flipped=false; tPos++; render(); }
+}
+function wireSettings(){
+  const qM=$('qMinus'), qP=$('qPlus'), r=$('resetBtn');
+  if(qM) qM.onclick=()=>{ setQuota(getQuota()-1); render(); };
+  if(qP) qP.onclick=()=>{ setQuota(getQuota()+1); render(); };
+  if(r) r.onclick=()=>{ if(confirm('确定清空所有学习进度和错词本吗？')){ localStorage.removeItem('vc_srs'); localStorage.removeItem('vc_wrong'); localStorage.removeItem('vc_daily'); todayList=[]; tPos=0; render(); } };
+}
+
+function renderBrowse(app){
+  const L=WORDS[curTab]; if(!L.length){ app.innerHTML='<div class="empty">这里还没有词。</div>'; return; }
+  if(idx>=L.length) idx=0;
+  const w=L[idx];
   app.innerHTML = `
     <div class="stat">${idx+1} / ${L.length} · ${curTab}</div>
     <div class="card" id="card">
       ${flipped ? `<div class="m">${w.m}</div>` : `<div class="w">${w.w}</div>${w.p?`<div class="phon">${w.p}</div>`:''}`}
       <div class="hint">${flipped ? '点我翻回去' : '点我翻面看释义'}</div>
     </div>
-    ${flipped ? `
-      <div class="row">
-        <button class="btn red" id="bNo">没记住</button>
-        <button class="btn green" id="bYes">记得</button>
-      </div>` : ''}
+    <div class="row"><button class="btn blue" id="prev">上一个</button><button class="btn blue" id="next">下一个</button></div>
   `;
-  $('card').onclick = () => { flipped=!flipped; render(); };
-  if(flipped){
-    $('bYes').onclick = ()=>{ if(inWrong) delWrong(curTab+'§'+w.w); idx++; flipped=false; render(); };
-    $('bNo').onclick = ()=>{ addWrong(curTab+'§'+w.w); idx++; flipped=false; render(); };
-  }
+  $('card').onclick=()=>{ flipped=!flipped; render(); };
+  $('prev').onclick=()=>{ idx=(idx-1+L.length)%L.length; flipped=false; render(); };
+  $('next').onclick=()=>{ idx=(idx+1)%L.length; flipped=false; render(); };
 }
 
 function renderQuiz(app){
-  const L = list();
+  const L=WORDS[curTab];
   if(!L.length){ app.innerHTML='<div class="empty">这里还没有词。</div>'; return; }
   if(!quizWord){
-    quizWord = L[Math.floor(Math.random()*L.length)];
-    const others = shuffle(L.filter(x=>x!==quizWord)).slice(0,3);
-    quizOpts = shuffle([quizWord, ...others]);
-    quizAnswered = false;
+    quizWord=L[Math.floor(Math.random()*L.length)];
+    quizOpts=shuffle([quizWord].concat(shuffle(L.filter(x=>x!==quizWord)).slice(0,3)));
+    quizAnswered=false;
   }
   app.innerHTML = `
     <div class="stat">${curTab} · 测试</div>
@@ -393,11 +443,11 @@ function renderQuiz(app){
   `;
   app.querySelectorAll('.opt').forEach(el=>el.onclick=()=>{
     if(quizAnswered) return;
-    quizAnswered = true;
-    const i = +el.dataset.i;
-    const right = quizOpts[i].w === quizWord.w;
+    quizAnswered=true;
+    const i=+el.dataset.i, right=quizOpts[i].w===quizWord.w;
     if(right){ el.classList.add('right'); }
-    else { el.classList.add('wrong'); addWrong(curTab+'§'+quizWord.w);
+    else { el.classList.add('wrong');
+      const key=curTab+'§'+quizWord.w; if(!wrong().includes(key)) setWrong(wrong().concat(key));
       app.querySelectorAll('.opt').forEach(o=>{ if(quizOpts[+o.dataset.i].w===quizWord.w) o.classList.add('right'); });
     }
     setTimeout(()=>{ quizWord=null; render(); }, 900);
@@ -405,38 +455,31 @@ function renderQuiz(app){
 }
 
 function renderReview(app){
-  const L = reviewList();
+  const L = wrong().map(k=>ALL.find(x=>x.key===k)).filter(Boolean);
   app.innerHTML = `<div class="stat">错词本 · 共 ${L.length} 个</div>`;
-  if(!L.length){ app.innerHTML += '<div class="empty">错词本是空的 🎉<br>去「学习」或「测试」里没记住的词会自动收进来。</div>'; return; }
+  if(!L.length){ app.innerHTML += '<div class="empty">错词本是空的 🎉<br>「今日任务」里点「忘记」、或测试答错的词会自动收进来。</div>'; return; }
   if(idx>=L.length) idx=0;
-  const item = L[idx];
-  const w = item.word;
+  const it=L[idx];
   app.innerHTML += `
     <div class="card" id="card">
-      ${flipped ? `<div class="m">${w.m}</div>` : `<div class="w">${w.w}</div>${w.p?`<div class="phon">${w.p}</div>`:''}`}
+      ${flipped ? `<div class="m">${it.m}</div>` : `<div class="w">${it.w}</div>${it.p?`<div class="phon">${it.p}</div>`:''}`}
       <div class="hint">${flipped ? '点我翻回去' : '点我翻面'}</div>
     </div>
-    ${flipped ? `
-      <div class="row">
-        <button class="btn red" id="rNo">还不会</button>
-        <button class="btn green" id="rYes">会了</button>
-      </div>` : ''}
+    ${flipped ? `<div class="row"><button class="btn red" id="rNo">还不会</button><button class="btn green" id="rYes">会了</button></div>` : ''}
   `;
-  $('card').onclick = ()=>{ flipped=!flipped; render(); };
+  $('card').onclick=()=>{ flipped=!flipped; render(); };
   if(flipped){
-    $('rYes').onclick = ()=>{ delWrong(item.key); idx++; flipped=false; render(); };
-    $('rNo').onclick = ()=>{ idx++; flipped=false; render(); };
+    $('rYes').onclick=()=>{ setWrong(wrong().filter(x=>x!==it.key)); idx++; flipped=false; render(); };
+    $('rNo').onclick=()=>{ idx++; flipped=false; render(); };
   }
 }
 
-renderTabs();
 renderModes();
+renderTabs();
 render();
 </script>
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(function(){});
-}
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
 </body>
 </html>
