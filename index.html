@@ -56,7 +56,7 @@
 </head>
 <body>
   <h1>📚 背单词</h1>
-  <div class="sub">新视野大学英语（第四版）读写教程 1 · Unit 1 &amp; 2<br>每日按艾宾浩斯遗忘曲线自动安排复习，进度存本机。</div>
+  <div class="sub">新视野大学英语（第四版）读写教程 1 · Unit 1–6<br>每日按艾宾浩斯遗忘曲线自动安排复习，进度存本机。</div>
 
   <div class="modes" id="modes"></div>
   <div class="tabs" id="tabs"></div>
@@ -617,7 +617,7 @@ function renderToday(app){
   }
   if(tPos>=todayList.length){
     html += `<div class="empty">✅ 今天的任务完成啦！<br>按遗忘曲线，到点的复习和新词都过了一遍。<br>明天再来，别断。</div>`;
-    app.innerHTML = html; todayList=[]; tPos=0; return;
+    app.innerHTML = html; wireSettings(); todayList=[]; tPos=0; return;
   }
   const it = todayList[tPos];
   html += `
@@ -633,6 +633,7 @@ function renderToday(app){
     </div>` : ''}
   `;
   app.innerHTML = html;
+  wireSettings();
   $('card').onclick = ()=>{ flipped=!flipped; render(); };
   if(flipped){
     $('f').onclick=()=>{ applyAnswer(it,'forgot'); next(); };
