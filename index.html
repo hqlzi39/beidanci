@@ -532,7 +532,7 @@ const store = {
 };
 const SRS = () => store.get('srs', {});
 const setSRS = s => store.set('srs', s);
-const getQuota = () => store.get('quota', 15);
+const getQuota = () => store.get('quota', 20);
 const setQuota = n => store.set('quota', Math.max(1, Math.min(100, n|0)));
 const wrong = () => store.get('wrong', []);
 const setWrong = a => store.set('wrong', a);
