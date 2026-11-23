@@ -576,7 +576,7 @@ function renderModes(){
     if(curMode==='today'){ todayList=[]; tPos=0; idx=0; }
     else if(curMode==='browse'){ const b=store.get('browse',{}); if(b.tab && WORDS[b.tab]) curTab=b.tab; idx=b.idx|0; }
     else { idx=0; }
-    renderModes(); render();
+    renderModes(); renderTabs(); render();
   });
 }
 function renderTabs(){
